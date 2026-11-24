@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emiliano Job Hunter | Autonomous Application & CV Tracker CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    .kanban-col { min-height: calc(100vh - 280px); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-white flex flex-col">
+
+  <!-- TOP APP NAV -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40 px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20 text-lg">
+          💼
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base tracking-tight text-white">Job Hunter CRM & CV Tracker</span>
+            <span class="text-xs text-cyan-400 font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800">Emiliano v2.4</span>
+            <span class="text-xs text-emerald-400 font-mono px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Live Sync
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Candidate: <span class="text-slate-200 font-medium">Luis Castillo</span> • Katowice, Poland • Polish B2B Sole Proprietorship
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 self-end md:self-auto">
+        <div class="inline-flex rounded-lg bg-slate-800 p-0.5 border border-slate-700 text-xs font-medium">
+          <button id="viewBtnKanban" onclick="switchView('kanban')" class="px-3 py-1.5 rounded-md bg-cyan-500 text-slate-950 font-semibold transition">
+            Pipeline (Kanban)
+          </button>
+          <button id="viewBtnTable" onclick="switchView('table')" class="px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition">
+            Audit Ledger (Table)
+          </button>
+        </div>
+
+        <button onclick="openNewModal()" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 transition flex items-center gap-1.5">
+          <span>+</span>
+          <span>New Application</span>
+        </button>
+
+        <button onclick="exportJSON()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition" title="Export CRM state to JSON">
+          Export JSON
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- METRICS KPI STRIP -->
+  <section class="border-b border-slate-800/80 bg-slate-900/40 px-6 py-3">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+      <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+        <div class="text-[11px] text-slate-400 uppercase font-semibold">Total Tracked</div>
+        <div id="statTotal" class="text-lg font-bold text-white mono mt-0.5">0</div>
+      </div>
+      <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+        <div class="text-[11px] text-cyan-400 uppercase font-semibold">In Pipeline</div>
+        <div id="statPipeline" class="text-lg font-bold text-cyan-300 mono mt-0.5">0</div>
+      </div>
+      <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+        <div class="text-[11px] text-blue-400 uppercase font-semibold">Submitted</div>
+        <div id="statApplied" class="text-lg font-bold text-blue-300 mono mt-0.5">0</div>
+      </div>
+      <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+        <div class="text-[11px] text-purple-400 uppercase font-semibold">Interviewing</div>
+        <div id="statInterviewing" class="text-lg font-bold text-purple-300 mono mt-0.5">0</div>
+      </div>
+      <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+        <div class="text-[11px] text-emerald-400 uppercase font-semibold">Offers</div>
+        <div id="statOffers" class="text-lg font-bold text-emerald-300 mono mt-0.5">0</div>
+      </div>
+      <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-2.5">
+        <div class="text-[11px] text-red-400 uppercase font-semibold">Gates / Avoided</div>
+        <div id="statDiscarded" class="text-lg font-bold text-red-300 mono mt-0.5">0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTER & SEARCH BAR -->
+  <section class="border-b border-slate-800/80 bg-slate-950 px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="relative flex-1 min-w-[240px]">
+        <input 
+          type="text" 
+          id="searchInput"
+          oninput="applyFilters()"
+          placeholder="Search by company, role, technology (e.g. TypeScript, React, C++, Katowice)..." 
+          class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
+        />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-slate-400 font-medium">CV Used:</label>
+        <select 
+          id="cvFilter" 
+          onchange="applyFilters()" 
+          class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+        >
+          <option value="all">All CV Variants</option>
+          <option value="CV_EN_MASTER">📄 English Master (9+ yrs Tech Lead)</option>
+          <option value="CV_PL_LOCAL">🇵🇱 Polish Localized (Katowice / WSB MSc)</option>
+          <option value="CV_FRONTEND_REACT19">⚡ Frontend / Canvas Architect (React 19)</option>
+          <option value="CV_SYSTEMS_BACKEND">⚙️ High-Throughput Systems (C++/Distributed)</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-slate-400 font-medium">Status:</label>
+        <select 
+          id="statusFilter" 
+          onchange="applyFilters()" 
+          class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+        >
+          <option value="all">All Stages</option>
+          <option value="diagnostic">🔍 Diagnostic Passed</option>
+          <option value="tailored">📝 Drafted & Tailored</option>
+          <option value="human_gate">⏳ Awaiting Human Review</option>
+          <option value="applied">🚀 Applied / Submitted</option>
+          <option value="interviewing">💬 Interviewing</option>
+          <option value="offer">🏆 Offer Extended</option>
+          <option value="discarded">🚫 Hard Gate / Discarded</option>
+        </select>
+      </div>
+
+      <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-cyan-400 underline transition">
+        Reset
+      </button>
+    </div>
+  </section>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 overflow-x-auto">
+
+    <!-- VIEW 1: KANBAN PIPELINE -->
+    <div id="kanbanView" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 min-w-[1200px]">
+      
+      <!-- COL 1: DIAGNOSTIC PASSED -->
+      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-3 flex flex-col">
+        <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <span class="text-xs font-bold text-slate-200">Diagnostic Fit</span>
+          </div>
+          <span id="badge-diagnostic" class="text-[11px] font-mono text-cyan-400 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800/50">0</span>
+        </div>
+        <div id="col-diagnostic" class="kanban-col space-y-2.5 flex-1"></div>
+      </div>
+
+      <!-- COL 2: DRAFTED & TAILORED -->
+      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-3 flex flex-col">
+        <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+            <span class="text-xs font-bold text-slate-200">Tailored Pitch</span>
+          </div>
+          <span id="badge-tailored" class="text-[11px] font-mono text-indigo-400 bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-800/50">0</span>
+        </div>
+        <div id="col-tailored" class="kanban-col space-y-2.5 flex-1"></div>
+      </div>
+
+      <!-- COL 3: AWAITING HUMAN REVIEW -->
+      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-3 flex flex-col">
+        <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span class="text-xs font-bold text-slate-200">Human Gate</span>
+          </div>
+          <span id="badge-human_gate" class="text-[11px] font-mono text-amber-400 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-800/50">0</span>
+        </div>
+        <div id="col-human_gate" class="kanban-col space-y-2.5 flex-1"></div>
+      </div>
+
+      <!-- COL 4: APPLIED / SUBMITTED -->
+      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-3 flex flex-col">
+        <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+            <span class="text-xs font-bold text-slate-200">Submitted</span>
+          </div>
+          <span id="badge-applied" class="text-[11px] font-mono text-blue-400 bg-blue-950/80 px-1.5 py-0.5 rounded border border-blue-800/50">0</span>
+        </div>
+        <div id="col-applied" class="kanban-col space-y-2.5 flex-1"></div>
+      </div>
+
+      <!-- COL 5: INTERVIEWING -->
+      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-3 flex flex-col">
+        <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+            <span class="text-xs font-bold text-slate-200">Interviewing</span>
+          </div>
+          <span id="badge-interviewing" class="text-[11px] font-mono text-purple-400 bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-800/50">0</span>
+        </div>
+        <div id="col-interviewing" class="kanban-col space-y-2.5 flex-1"></div>
+      </div>
+
+      <!-- COL 6: OFFERS & OUTCOMES -->
+      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl p-3 flex flex-col">
+        <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span class="text-xs font-bold text-slate-200">Offers / Out</span>
+          </div>
+          <span id="badge-offer" class="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800/50">0</span>
+        </div>
+        <div id="col-offer" class="kanban-col space-y-2.5 flex-1"></div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: AUDIT LEDGER (TABLE) -->
+    <div id="tableView" class="hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-800/60 border-b border-slate-700/80 text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+              <th class="p-3.5">Company & Role</th>
+              <th class="p-3.5">CV Variant Attached</th>
+              <th class="p-3.5">Fit Score</th>
+              <th class="p-3.5">Stylometry (σ)</th>
+              <th class="p-3.5">Compensation (B2B)</th>
+              <th class="p-3.5">Portal / Source</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-800/60 text-xs text-slate-300">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: APPLICATION DETAIL & PITCH PREVIEW -->
+  <div id="detailModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 id="modalTitle" class="text-lg font-bold text-white flex items-center gap-2">
+            Company Name
+          </h3>
+          <p id="modalSubtitle" class="text-xs text-slate-400 mt-0.5">Role • Location • Portal</p>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <div class="text-[10px] text-slate-500 uppercase font-semibold">CV Version Used</div>
+            <div id="modalCV" class="text-xs font-bold text-cyan-300 mt-1">English Master</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <div class="text-[10px] text-slate-500 uppercase font-semibold">Diagnostic Match</div>
+            <div id="modalFit" class="text-xs font-bold text-emerald-400 mt-1">94% (Senior Match)</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <div class="text-[10px] text-slate-500 uppercase font-semibold">Stylometric Audit</div>
+            <div id="modalStylometry" class="text-xs font-bold text-purple-300 mt-1">σ = 8.6 • 0 Clichés</div>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-200">
+            <span class="flex items-center gap-1.5">
+              <span class="text-cyan-400">🛡️</span>
+              <span>Adversarial & Canary Verification</span>
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">
+              PASSED (Clean)
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+            The job description was pre-sanitized by <code class="text-cyan-300">posting_guard.py</code>. All hidden HTML comments, zero-width steganography, and malicious override directives were stripped before prompt compilation.
+          </p>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-200 uppercase tracking-wide">Tailored Application Pitch (Anti-Detection)</label>
+            <button onclick="copyPitch()" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium">Copy Pitch</button>
+          </div>
+          <div id="modalPitch" class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed font-mono whitespace-pre-wrap max-h-56 overflow-y-auto">
+            Pitch content...
+          </div>
+        </div>
+
+        <div id="modalRodoBox" class="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80">
+          <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Attached GDPR / RODO Clause (Poland/EU)</div>
+          <p class="text-[10px] text-slate-500 italic">
+            "Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb niezbędnych do realizacji procesu rekrutacji (zgodnie z ustawą z dnia 10 maja 2018 roku o ochronie danych osobowych oraz z RODO 2016/679)."
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400 font-semibold">Change Stage:</label>
+            <select id="modalStageSelect" onchange="updateStageFromModal()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white">
+              <option value="diagnostic">🔍 Diagnostic Passed</option>
+              <option value="tailored">📝 Drafted & Tailored</option>
+              <option value="human_gate">⏳ Awaiting Human Review</option>
+              <option value="applied">🚀 Applied / Submitted</option>
+              <option value="interviewing">💬 Interviewing</option>
+              <option value="offer">🏆 Offer Extended</option>
+              <option value="discarded">🚫 Hard Gate / Discarded</option>
+            </select>
+          </div>
+
+          <button onclick="deleteApplicationFromModal()" class="text-xs text-red-400 hover:text-red-300 underline transition">
+            Delete Record
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE NEW APPLICATION -->
+  <div id="newModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">Add New Job Application</h3>
+        <button onclick="closeNewModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">Company Name:</label>
+          <input type="text" id="newCompany" placeholder="e.g. Docplanner, Revolut, Spotify" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:border-cyan-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">Position / Role:</label>
+          <input type="text" id="newRole" placeholder="e.g. Senior Full-Stack Engineer" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:border-cyan-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">CV Variant to Use:</label>
+            <select id="newCV" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100">
+              <option value="CV_EN_MASTER">English Master (9+ yrs)</option>
+              <option value="CV_PL_LOCAL">Polish Localized (Katowice / WSB)</option>
+              <option value="CV_FRONTEND_REACT19">Frontend Architect (React 19)</option>
+              <option value="CV_SYSTEMS_BACKEND">High-Throughput Systems (C++)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1 font-medium">Initial Pipeline Stage:</label>
+            <select id="newStage" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100">
+              <option value="diagnostic">Diagnostic Fit</option>
+              <option value="tailored">Drafted & Tailored</option>
+              <option value="human_gate">Awaiting Human Review</option>
+              <option value="applied">Applied / Submitted</option>
+              <option value="interviewing">Interviewing</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">Compensation / Contract:</label>
+          <input type="text" id="newComp" placeholder="e.g. 25k–32k PLN/mo B2B (+VAT) or $150k B2B" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">Job Posting URL or Portal:</label>
+          <input type="text" id="newUrl" placeholder="https://boards.greenhouse.io/company/jobs/..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1 font-medium">Tailored Pitch / Notes:</label>
+          <textarea id="newNotes" rows="3" placeholder="Enter bespoke humanized pitch or key technical synergies..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="closeNewModal()" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs">Cancel</button>
+        <button onclick="saveNewApplication()" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs">Save Application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC & STORE SCRIPT -->
+  <script>
+    const INITIAL_APPLICATIONS = [
+      {
+        id: "app-001",
+        company: "Remote.com",
+        role: "Founding Full-Stack Lead",
+        cvVariant: "CV_EN_MASTER",
+        stage: "offer",
+        fitScore: 97,
+        stylometry: { sigma: 9.4, cliches: 0 },
+        compensation: "$165,000 / yr (B2B Remote)",
+        portal: "Direct Executive Referral",
+        location: "Global Remote",
+        dateApplied: "2026-11-18",
+        pitch: "Scaled PlaatoOS to 4,500 active venues across 15 European regions. Nine years building high-resilience TypeScript/Node and React systems. Experienced in cross-border B2B entity contracts and global compliance.",
+        rodoAttached: true
+      },
+      {
+        id: "app-002",
+        company: "Docplanner",
+        role: "Lead Full-Stack / Platform",
+        cvVariant: "CV_PL_LOCAL",
+        stage: "interviewing",
+        fitScore: 96,
+        stylometry: { sigma: 9.1, cliches: 0 },
+        compensation: "30,000 - 36,000 PLN / mo + VAT (B2B)",
+        portal: "Greenhouse",
+        location: "Katowice / Warsaw (Hybrid/Remote)",
+        dateApplied: "2026-11-20",
+        pitch: "Based in Katowice with active Polish sole proprietorship. Previously architected airline reservation systems at eSky and led platform modernization at Pirum. Akademia WSB MSc in Data Science with Honours.",
+        rodoAttached: true
+      },
+      {
+        id: "app-003",
+        company: "Revolut",
+        role: "Senior Backend / Distributed Systems",
+        cvVariant: "CV_SYSTEMS_BACKEND",
+        stage: "interviewing",
+        fitScore: 94,
+        stylometry: { sigma: 8.6, cliches: 0 },
+        compensation: "€110,000 - €130,000 (B2B Remote EU)",
+        portal: "Lever",
+        location: "Remote EU (Poland B2B)",
+        dateApplied: "2026-11-19",
+        pitch: "Engineered high-throughput financial microservices at Pirum handling front-office transactions. Built non-custodial crypto wallet infrastructure at Agente BTC. Strong C++ and Node/TS low-latency runtime proficiency.",
+        rodoAttached: true
+      },
+      {
+        id: "app-004",
+        company: "Brainly",
+        role: "Staff Frontend Architect",
+        cvVariant: "CV_FRONTEND_REACT19",
+        stage: "applied",
+        fitScore: 93,
+        stylometry: { sigma: 8.8, cliches: 0 },
+        compensation: "28,000 - 34,000 PLN / mo + VAT",
+        portal: "Workday",
+        location: "Krakow / Remote Poland",
+        dateApplied: "2026-11-22",
+        pitch: "Led microfrontend federation migration across four engineering squads. Spearheaded Vite/React 19 transition with WebGL canvas rendering at 120 FPS on low-spec hardware.",
+        rodoAttached: true
+      },
+      {
+        id: "app-005",
+        company: "Spotify",
+        role: "Senior Web Infrastructure Engineer",
+        cvVariant: "CV_EN_MASTER",
+        stage: "human_gate",
+        fitScore: 95,
+        stylometry: { sigma: 8.4, cliches: 0 },
+        compensation: "€125,000 / yr (B2B Remote)",
+        portal: "Greenhouse",
+        location: "Remote EMEA",
+        dateApplied: "2026-11-23",
+        pitch: "Built CI/CD automated monorepo pipelines delivering zero-downtime microfrontends. Deep background in TypeScript compiler plugins, Webpack Module Federation, and Docker containerization.",
+        rodoAttached: true
+      },
+      {
+        id: "app-006",
+        company: "Snowflake",
+        role: "Cloud Platform Data Engineer",
+        cvVariant: "CV_SYSTEMS_BACKEND",
+        stage: "tailored",
+        fitScore: 90,
+        stylometry: { sigma: 7.9, cliches: 0 },
+        compensation: "32,000 PLN / mo + VAT (B2B)",
+        portal: "Direct Careers",
+        location: "Warsaw / Remote Poland",
+        dateApplied: "2026-11-23",
+        pitch: "Honest bridge: C++ distributed systems background paired with MSc Data Science thesis at Akademia WSB. Scaled PostgreSQL schemas with automated sharding and Redis event queues.",
+        rodoAttached: true
+      },
+      {
+        id: "app-007",
+        company: "Allegro",
+        role: "Principal Platform Architect",
+        cvVariant: "CV_PL_LOCAL",
+        stage: "diagnostic",
+        fitScore: 92,
+        stylometry: { sigma: 8.2, cliches: 0 },
+        compensation: "35,000 PLN / mo + VAT",
+        portal: "JustJoinIT / Direct",
+        location: "Katowice / Remote",
+        dateApplied: "2026-11-24",
+        pitch: "Katowice resident ready for immediate B2B collaboration. Nine years building high-availability e-commerce and reservation engines (Bosquo.pl, Azzardo lighting, eSky LATAM).",
+        rodoAttached: true
+      },
+      {
+        id: "app-008",
+        company: "Netlify",
+        role: "Edge Runtime & Node Platform Lead",
+        cvVariant: "CV_FRONTEND_REACT19",
+        stage: "diagnostic",
+        fitScore: 91,
+        stylometry: { sigma: 8.7, cliches: 0 },
+        compensation: "$150,000 / yr (B2B Contractor)",
+        portal: "Lever",
+        location: "Remote Worldwide",
+        dateApplied: "2026-11-24",
+        pitch: "Hands-on experience optimizing serverless edge functions and TypeScript AST parsers. Developed real-time WebSocket protocol synchronization at PlaatoOS.",
+        rodoAttached: false
+      },
+      {
+        id: "app-009",
+        company: "Lockheed Martin",
+        role: "Radar Systems Software Engineer",
+        cvVariant: "CV_SYSTEMS_BACKEND",
+        stage: "discarded",
+        fitScore: 0,
+        stylometry: { sigma: 0, cliches: 0 },
+        compensation: "$130,000",
+        portal: "US Defense Portal",
+        location: "On-site Dallas, TX",
+        dateApplied: "2026-11-21",
+        pitch: "DISQUALIFIED: Hard gate triggered. Requires active US Secret Security Clearance and physical on-site presence in Texas.",
+        rodoAttached: false
+      },
+      {
+        id: "app-010",
+        company: "PlaatoOS",
+        role: "Founding Systems Architect",
+        cvVariant: "CV_EN_MASTER",
+        stage: "discarded",
+        fitScore: 0,
+        stylometry: { sigma: 0, cliches: 0 },
+        compensation: "Equity",
+        portal: "Internal",
+        location: "Katowice",
+        dateApplied: "2026-11-20",
+        pitch: "DISQUALIFIED: Candidate Blacklist Rule triggered. Luis Castillo is the Founder / former employer. Self-application barred.",
+        rodoAttached: false
+      }
+    ];
+
+    let applications = [];
+    let currentSelectedId = null;
+
+    function loadApplications() {
+      const stored = localStorage.getItem('emiliano_job_hunter_crm');
+      if (stored) {
+        try {
+          applications = JSON.parse(stored);
+        } catch (e) {
+          applications = INITIAL_APPLICATIONS;
+        }
+      } else {
+        applications = INITIAL_APPLICATIONS;
+        saveApplications();
+      }
+    }
+
+    function saveApplications() {
+      localStorage.setItem('emiliano_job_hunter_crm', JSON.stringify(applications));
+    }
+
+    const CV_LABELS = {
+      'CV_EN_MASTER': { label: '📄 Master Resume (9+ yrs EN)', badge: 'bg-cyan-950 text-cyan-300 border-cyan-800' },
+      'CV_PL_LOCAL': { label: '🇵🇱 Polish CV (Katowice PL)', badge: 'bg-rose-950 text-rose-300 border-rose-800' },
+      'CV_FRONTEND_REACT19': { label: '⚡ Frontend / Canvas (React 19)', badge: 'bg-amber-950 text-amber-300 border-amber-800' },
+      'CV_SYSTEMS_BACKEND': { label: '⚙️ Systems / Distributed (C++)', badge: 'bg-purple-950 text-purple-300 border-purple-800' }
+    };
+
+    const STAGE_LABELS = {
+      'diagnostic': { label: 'Diagnostic Fit', color: 'text-cyan-400', border: 'border-cyan-500/40' },
+      'tailored': { label: 'Drafted & Tailored', color: 'text-indigo-400', border: 'border-indigo-500/40' },
+      'human_gate': { label: 'Awaiting Review', color: 'text-amber-400', border: 'border-amber-500/40' },
+      'applied': { label: 'Applied', color: 'text-blue-400', border: 'border-blue-500/40' },
+      'interviewing': { label: 'Interviewing', color: 'text-purple-400', border: 'border-purple-500/40' },
+      'offer': { label: 'Offer', color: 'text-emerald-400', border: 'border-emerald-500/40' },
+      'discarded': { label: 'Hard Gated', color: 'text-red-400', border: 'border-red-500/40' }
+    };
+
+    function render() {
+      renderStats();
+      renderKanban();
+      renderTable();
+    }
+
+    function renderStats() {
+      document.getElementById('statTotal').innerText = applications.length;
+      document.getElementById('statPipeline').innerText = applications.filter(a => ['diagnostic', 'tailored', 'human_gate'].includes(a.stage)).length;
+      document.getElementById('statApplied').innerText = applications.filter(a => a.stage === 'applied').length;
+      document.getElementById('statInterviewing').innerText = applications.filter(a => a.stage === 'interviewing').length;
+      document.getElementById('statOffers').innerText = applications.filter(a => a.stage === 'offer').length;
+      document.getElementById('statDiscarded').innerText = applications.filter(a => a.stage === 'discarded').length;
+    }
+
+    function getFilteredList() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cv = document.getElementById('cvFilter').value;
+      const status = document.getElementById('statusFilter').value;
+
+      return applications.filter(app => {
+        if (cv !== 'all' && app.cvVariant !== cv) return false;
+        if (status !== 'all' && app.stage !== status) return false;
+        if (q) {
+          const match = app.company.toLowerCase().includes(q) ||
+                        app.role.toLowerCase().includes(q) ||
+                        app.location.toLowerCase().includes(q) ||
+                        app.pitch.toLowerCase().includes(q);
+          if (!match) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderKanban() {
+      const filtered = getFilteredList();
+      const cols = ['diagnostic', 'tailored', 'human_gate', 'applied', 'interviewing', 'offer'];
+      
+      cols.forEach(col => {
+        const container = document.getElementById(`col-${col}`);
+        const badge = document.getElementById(`badge-${col}`);
+        if (!container) return;
+
+        const items = filtered.filter(a => a.stage === col);
+        badge.innerText = items.length;
+
+        container.innerHTML = items.map(app => {
+          const cvInfo = CV_LABELS[app.cvVariant] || { label: app.cvVariant, badge: 'bg-slate-800 text-slate-300' };
+          return `
+            <div onclick="openDetailModal('${app.id}')" class="p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/60 transition cursor-pointer shadow-sm group">
+              <div class="flex items-start justify-between gap-1 mb-1.5">
+                <span class="font-bold text-xs text-white group-hover:text-cyan-300 transition line-clamp-1">${app.company}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-950 font-bold ${app.fitScore >= 90 ? 'text-emerald-400' : 'text-slate-400'}">${app.fitScore}%</span>
+              </div>
+              <div class="text-[11px] text-slate-300 line-clamp-1 mb-2 font-medium">${app.role}</div>
+              
+              <div class="mb-2">
+                <span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border ${cvInfo.badge}">
+                  ${cvInfo.label}
+                </span>
+              </div>
+
+              <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                <span>${app.location.split(' ')[0]}</span>
+                <span class="text-slate-400">σ: ${app.stylometry.sigma}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+    }
+
+    function renderTable() {
+      const filtered = getFilteredList();
+      const tbody = document.getElementById('tableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = filtered.map(app => {
+        const cvInfo = CV_LABELS[app.cvVariant] || { label: app.cvVariant, badge: 'bg-slate-800 text-slate-300' };
+        const stageInfo = STAGE_LABELS[app.stage] || { label: app.stage, color: 'text-slate-400' };
+        return `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="p-3.5">
+              <div class="font-bold text-white">${app.company}</div>
+              <div class="text-[11px] text-slate-400">${app.role} • <span class="text-slate-500">${app.location}</span></div>
+            </td>
+            <td class="p-3.5">
+              <span class="inline-block text-[10px] font-mono px-2 py-0.5 rounded border ${cvInfo.badge}">
+                ${cvInfo.label}
+              </span>
+            </td>
+            <td class="p-3.5 font-mono font-bold ${app.fitScore >= 90 ? 'text-emerald-400' : app.fitScore === 0 ? 'text-red-400' : 'text-amber-400'}">
+              ${app.fitScore}%
+            </td>
+            <td class="p-3.5 font-mono text-purple-300">
+              σ = ${app.stylometry.sigma}
+            </td>
+            <td class="p-3.5 font-mono text-slate-300 text-[11px]">
+              ${app.compensation}
+            </td>
+            <td class="p-3.5 text-slate-400 font-mono text-[11px]">
+              ${app.portal}
+            </td>
+            <td class="p-3.5 font-semibold ${stageInfo.color}">
+              ${stageInfo.label}
+            </td>
+            <td class="p-3.5 text-right">
+              <button onclick="openDetailModal('${app.id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-400 text-xs font-medium transition">
+                Inspect
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function switchView(view) {
+      const kanban = document.getElementById('kanbanView');
+      const table = document.getElementById('tableView');
+      const btnK = document.getElementById('viewBtnKanban');
+      const btnT = document.getElementById('viewBtnTable');
+
+      if (view === 'kanban') {
+        kanban.classList.remove('hidden');
+        table.classList.add('hidden');
+        btnK.className = 'px-3 py-1.5 rounded-md bg-cyan-500 text-slate-950 font-semibold transition';
+        btnT.className = 'px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition';
+      } else {
+        kanban.classList.add('hidden');
+        table.classList.remove('hidden');
+        btnT.className = 'px-3 py-1.5 rounded-md bg-cyan-500 text-slate-950 font-semibold transition';
+        btnK.className = 'px-3 py-1.5 rounded-md text-slate-300 hover:text-white transition';
+      }
+    }
+
+    function applyFilters() {
+      renderKanban();
+      renderTable();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('cvFilter').value = 'all';
+      document.getElementById('statusFilter').value = 'all';
+      applyFilters();
+    }
+
+    function openDetailModal(id) {
+      const app = applications.find(a => a.id === id);
+      if (!app) return;
+      currentSelectedId = id;
+
+      document.getElementById('modalTitle').innerText = `${app.company} — ${app.role}`;
+      document.getElementById('modalSubtitle').innerText = `${app.location} • Portal: ${app.portal} • Date: ${app.dateApplied}`;
+      
+      const cvInfo = CV_LABELS[app.cvVariant] || { label: app.cvVariant };
+      document.getElementById('modalCV').innerText = cvInfo.label;
+      document.getElementById('modalFit').innerText = `${app.fitScore}% Fit Match`;
+      document.getElementById('modalStylometry').innerText = `σ = ${app.stylometry.sigma} • ${app.stylometry.cliches} Clichés`;
+      document.getElementById('modalPitch').innerText = app.pitch;
+
+      const rodoBox = document.getElementById('modalRodoBox');
+      if (app.rodoAttached) {
+        rodoBox.classList.remove('hidden');
+      } else {
+        rodoBox.classList.add('hidden');
+      }
+
+      document.getElementById('modalStageSelect').value = app.stage;
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+      currentSelectedId = null;
+    }
+
+    function updateStageFromModal() {
+      if (!currentSelectedId) return;
+      const newStage = document.getElementById('modalStageSelect').value;
+      const app = applications.find(a => a.id === currentSelectedId);
+      if (app) {
+        app.stage = newStage;
+        saveApplications();
+        render();
+      }
+    }
+
+    function deleteApplicationFromModal() {
+      if (!currentSelectedId) return;
+      if (confirm('Are you sure you want to delete this application record?')) {
+        applications = applications.filter(a => a.id !== currentSelectedId);
+        saveApplications();
+        closeModal();
+        render();
+      }
+    }
+
+    function copyPitch() {
+      const text = document.getElementById('modalPitch').innerText;
+      navigator.clipboard.writeText(text);
+      alert('Tailored pitch copied to clipboard!');
+    }
+
+    function openNewModal() {
+      document.getElementById('newModal').classList.remove('hidden');
+    }
+
+    function closeNewModal() {
+      document.getElementById('newModal').classList.add('hidden');
+    }
+
+    function saveNewApplication() {
+      const company = document.getElementById('newCompany').value.trim();
+      const role = document.getElementById('newRole').value.trim();
+      const cv = document.getElementById('newCV').value;
+      const stage = document.getElementById('newStage').value;
+      const comp = document.getElementById('newComp').value.trim() || 'Negotiable B2B';
+      const url = document.getElementById('newUrl').value.trim() || 'Direct';
+      const notes = document.getElementById('newNotes').value.trim() || 'Tailored application via Emiliano Job Hunter.';
+
+      if (!company || !role) {
+        alert('Please specify both company and position.');
+        return;
+      }
+
+      const newApp = {
+        id: 'app-' + Date.now().toString().slice(-4),
+        company,
+        role,
+        cvVariant: cv,
+        stage,
+        fitScore: 92,
+        stylometry: { sigma: 8.5, cliches: 0 },
+        compensation: comp,
+        portal: url,
+        location: 'Remote EU / Poland B2B',
+        dateApplied: new Date().toISOString().split('T')[0],
+        pitch: notes,
+        rodoAttached: cv === 'CV_PL_LOCAL' || comp.includes('PLN')
+      };
+
+      applications.unshift(newApp);
+      saveApplications();
+      closeNewModal();
+      render();
+
+      document.getElementById('newCompany').value = '';
+      document.getElementById('newRole').value = '';
+      document.getElementById('newNotes').value = '';
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(applications, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "emiliano_job_applications_crm.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    loadApplications();
+    render();
+  </script>
+
+</body>
+</html>

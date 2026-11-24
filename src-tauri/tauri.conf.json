@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "emiliano-job-hunter",
+  "version": "1.0.0",
+  "identifier": "com.oracliom.emiliano.jobhunter",
+  "build": {
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Emiliano Job Hunter | Application & CV Tracker",
+        "width": 1400,
+        "height": 920,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "center": true,
+        "decorations": true,
+        "transparent": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}

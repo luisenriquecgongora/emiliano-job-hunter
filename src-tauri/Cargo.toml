@@ -1,0 +1,21 @@
+[package]
+name = "emiliano-job-hunter"
+version = "1.0.0"
+description = "Emiliano Job Hunter: Standalone Visual Career & CV Variant CRM"
+authors = ["Luis Castillo", "Oracliom Ecosystem"]
+license = "MIT"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

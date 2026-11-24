@@ -1,0 +1,70 @@
+{
+  "full_name": "Luis Castillo",
+  "title": "Senior Software Engineer & Systems Architect",
+  "years_of_experience": 9,
+  "location": {
+    "city": "Katowice",
+    "country": "Poland",
+    "address": "Mickiewicza 24/21a, 40-092 Katowice",
+    "timezone": "CET / CEST (UTC+1 / UTC+2)"
+  },
+  "contact": {
+    "email": "luis.castillo@oracliom.com",
+    "linkedin": "https://www.linkedin.com/in/luis-castillo-tech",
+    "github": "https://github.com/luis-castillo"
+  },
+  "legal_entity": {
+    "contract_type": "B2B Contractor",
+    "tax_status": "Registered Polish Sole Proprietorship (Jednoosobowa Działalność Gospodarcza)",
+    "invoicing": "Worldwide invoicing in EUR, USD, and PLN with active EU VAT (PL NIP)"
+  },
+  "target_compensation": {
+    "pln_monthly_b2b": "28,000 - 36,000 PLN + VAT",
+    "eur_annual_b2b": "€110,000 - €135,000",
+    "usd_annual_b2b": "$140,000 - $170,000"
+  },
+  "languages": {
+    "Spanish": "Native",
+    "English": "Full Professional (C2)",
+    "Polish": "B1 / Professional Working"
+  },
+  "cv_variants": [
+    {
+      "id": "CV_EN_MASTER",
+      "name": "English Master Resume (9+ yrs Tech Lead)",
+      "file": "documents/cv/LUIS_CASTILLO_RESUME_2026.pdf",
+      "target_roles": ["Staff Engineer", "Tech Lead", "Full-Stack Architect", "Founding Engineer"]
+    },
+    {
+      "id": "CV_PL_LOCAL",
+      "name": "Polish Localized CV (Katowice & WSB Honours)",
+      "file": "documents/cv/CV_Luis_Castillo_PL.docx",
+      "target_roles": ["Lead Developer Poland", "Senior Engineer Warsaw/Katowice", "B2B Poland"]
+    },
+    {
+      "id": "CV_FRONTEND_REACT19",
+      "name": "Frontend & Real-time Canvas Architect",
+      "file": "documents/cv/LUIS_CASTILLO_RESUME_2026.pdf",
+      "target_roles": ["Frontend Architect", "React 19 / Vite Specialist", "WebGL Canvas Lead"]
+    },
+    {
+      "id": "CV_SYSTEMS_BACKEND",
+      "name": "High-Throughput Systems & C++ Lead",
+      "file": "documents/cv/LUIS_CASTILLO_RESUME_2026.pdf",
+      "target_roles": ["Distributed Systems Engineer", "C++ R&D Lead", "Fintech Backend Architect"]
+    }
+  ],
+  "blacklisted_employers": [
+    "PlaatoOS",
+    "Wexler.AI",
+    "Pirum Systems",
+    "AGP eGlass"
+  ],
+  "honest_bridges": {
+    "Next.js": "Deep foundation in React 19, Vite, SSR principles, and microfrontend federation.",
+    "NestJS": "Enterprise Node.js/TypeScript architecture, Express, dependency injection, and clean architecture.",
+    "Golang": "Extensive C++ systems programming, multi-threading, socket IPC, and low-latency runtimes.",
+    "GraphQL": "REST API design, OpenAPI schemas, high-throughput RPC, and strict TypeScript contracts."
+  },
+  "rodo_gdpr_clause": "Wyrażam zgodę na przetwarzanie moich danych osobowych dla potrzeb niezbędnych do realizacji procesu rekrutacji (zgodnie z ustawą z dnia 10 maja 2018 roku o ochronie danych osobowych (Dz. Ustaw z 2018, poz. 1000) oraz zgodnie z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych)."
+}
