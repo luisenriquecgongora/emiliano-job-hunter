@@ -2,6 +2,7 @@
   "name": "emiliano-job-hunter",
   "private": true,
   "version": "1.0.0",
+  "description": "The Candidate Tracking System (CTS) — The Counter-ATS & Autonomous Career Agent for Candidates",
   "type": "module",
   "scripts": {
     "dev": "vite",

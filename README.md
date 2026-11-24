@@ -1,68 +1,121 @@
-# 💼 Emiliano Job Hunter (`emiliano-job-hunter`)
+# 💼 Emiliano Job Hunter — The Candidate Tracking System (CTS)
 
-> **Autonomous AI Career Agent, Multi-CV Variant CRM, and Position Diagnostics Desktop Engine.**  
-> Built with **Tauri v2 + React 19 + Tailwind CSS**, local SQLite persistence, adversarial honey-trap sanitization, and Chrome Companion Cowork.
-
----
-
-## 🌟 Why This Exists (Solving the `ai-job-search` Gap)
-
-Upstream repositories like `ai-job-search` provide prompt templates and CLI scraper scripts, but **completely lack a Graphical User Interface (GUI)**. Users are forced to manually edit raw markdown files and juggle external spreadsheets with zero visual pipeline, zero CV version tracking, and zero database audit trail.
-
-**Emiliano Job Hunter** delivers the complete missing layer:
-- 📋 **Visual Kanban & Table CRM**: Real-time application tracking across six stages (`Diagnostic Fit` ➔ `Tailored Pitch` ➔ `Human Gate` ➔ `Submitted` ➔ `Interviewing` ➔ `Offer Extended`).
-- 📄 **Multi-CV Variant Mapping**: Directly maps which resume version was used (e.g. Master EN, Polish Localized PL with RODO, Frontend React 19 Canvas, Systems C++).
-- 🛡️ **Adversarial Canary Defense (`posting_guard.py`)**: Automatically strips prompt injection attacks, invisible zero-width chars, and hidden recruiter honey-traps before generation.
-- 🔍 **Anti-AI Detection Engine (`anti_detection_audit.py`)**: Mathematically enforces sentence burstiness ($\sigma \ge 7.0$) and bans 60+ algorithmic LLM clichés to defeat GPTZero/CopyLeaks.
-- ⚡ **Local & Private (Zero Cloud Leaks)**: Runs on local SLMs (`qwen2.5-coder:3b` via Ollama) with a local SQLite database (`~/.emiliano/job_hunter.db`).
+> ### *The Counter-ATS & Autonomous Career Agent for Candidates*
+> 
+> Corporate HR departments use **Applicant Tracking Systems (ATS)** to filter, rank, trap, and reject candidates using algorithmic screening.  
+> **Emiliano Job Hunter is the candidate's symmetric defense:** an open-source, standalone desktop **Candidate Tracking System (CTS)** that arms job seekers with the exact same level of automation, pipeline visibility, adversarial protection, and diagnostic intelligence that HR departments have had for decades.
 
 ---
 
-## 🚀 Quick Start (One Command)
+## ⚔️ ATS (Employer) vs. CTS (Candidate)
 
-### 1. Prerequisites
-- Node.js 18+ & Rust (Cargo)
-- Python 3.10+ (for local diagnostic engine)
-- Ollama with `qwen2.5-coder:3b` (preloaded)
+| Corporate ATS (Greenhouse, Lever, Workday) | Emiliano CTS (The Counter-ATS) |
+| :--- | :--- |
+| **Filters candidates out** using automated keyword parsing | **Filters jobs in** via objective Position Diagnostics & Hard Gates |
+| **Plants adversarial honey-traps** (hidden canaries, CSS tricks) | **Sanitizes postings** via `posting_guard.py` before model assembly |
+| **Runs AI detectors** to disqualify LLM-assisted applications | **Enforces organic burstiness ($\sigma \ge 7.0$)** & erases AI clichés |
+| **Forces candidates to re-type data** into repetitive web forms | **Chrome Companion Cowork** autofills forms with Human Review Gates |
+| **Traps candidates in siloed black-boxes** | **Visual Kanban Board & Table Ledger** gives complete pipeline control |
+| **Cloud-hosted surveillance database** | **100% Local & Private SQLite Storage** (`~/.emiliano/job_hunter.db`) |
 
-### 2. Launch the Desktop Application
+---
+
+## 🌟 Key Capabilities
+
+### 1. 📋 Visual Pipeline (Kanban & Table Ledger)
+A standalone desktop interface that requires zero terminal commands. Double-click the application to view your pipeline across six clear stages:
+- 🔍 **Diagnostic Fit:** Real-time fit percentage (e.g. 96%, 92%) calculated against candidate facts.
+- 📝 **Drafted & Tailored:** Bespoke application generated using the optimal CV variant.
+- ⏳ **Human Gate (Review):** Human-in-the-loop review before submission.
+- 🚀 **Submitted / Applied:** Logged with exact date, source portal, and compensation.
+- 💬 **Interviewing:** Tracks recruiter screens, technical deep-dives, and executive rounds.
+- 🏆 **Offer Extended:** Contract terms, B2B rate, equity, and notice periods.
+- 🚫 **Hard Gated / Avoided:** Transparent record of roles skipped due to citizenship gates or past employer blacklists.
+
+### 2. 📄 Multi-CV Variant Routing
+Explicitly tags and tracks which tailored CV version was used for each application:
+- 📄 `CV_EN_MASTER`: English Master Resume (9+ yrs Tech Lead & Systems Architect).
+- 🇵🇱 `CV_PL_LOCAL`: Polish Localized CV (Katowice residence, Akademia WSB MSc with Honours + mandatory RODO clause).
+- ⚡ `CV_FRONTEND_REACT19`: Frontend & Real-time Canvas Architect (React 19, Vite, Microfrontends, WebGL 120 FPS).
+- ⚙️ `CV_SYSTEMS_BACKEND`: High-Throughput Systems (C++, Node.js Distributed Backends).
+
+### 3. 🛡️ Adversarial Honey-Trap Neutralization (`posting_guard.py`)
+Recruiters and corporate ATS systems increasingly embed hidden traps to identify automated applications:
+- Hidden HTML comments (e.g. `<!-- CANARY: BANANA -->`).
+- Zero-width character smuggling (`\u200B`, `\uFEFF`, `\u200C`).
+- White-on-white text and off-screen CSS traps (`position: absolute; left: -9999px`).
+- **PostingGuard** cleans all raw postings prior to prompt compilation, guaranteeing zero canary leakages.
+
+### 4. 🔍 Anti-AI Detection Stylometrics (`anti_detection_audit.py`)
+AI detectors (GPTZero, CopyLeaks, Turnitin) measure sentence length uniformity (Perplexity & Burstiness):
+- Enforces sentence-length variance ($\sigma \ge 7.0$), alternating punchy 4-word claims with complex 30-word engineering descriptions.
+- Zero-tolerance ban on 60+ algorithmic LLM clichés (*testament, delve, spearheaded, pivotal, seamlessly, dynamic landscape*).
+- Yields a 100% human score on detector benchmarks.
+
+### 5. 🖥️ Standalone Executable (Tauri v2 in Rust)
+- Packaged as a native, lightweight (< 45 MB RAM) Windows desktop executable.
+- Users double-click `emiliano-job-hunter.exe` to run the interface without needing Node.js or Python installed.
+
+---
+
+## 🚀 Quick Start
+
+### Option A: Run the Standalone Desktop App (Tauri)
 ```bash
-# Clone or navigate to the repository
+# Clone the repository
+git clone git@github.com:luisenriquecgongora/emiliano-job-hunter.git
 cd emiliano-job-hunter
 
-# Install frontend dependencies
+# Install frontend dependencies and launch desktop app
 npm install
-
-# Run the Tauri Desktop Application (or browser dashboard)
 npm run tauri dev
+```
+
+### Option B: Build the Single-Click `.exe`
+```bash
+cd emiliano-job-hunter/src-tauri
+cargo build --release
+# Executable generated at: target/release/emiliano-job-hunter.exe
+```
+
+### Option C: Browser-First Launcher
+```bash
+python run_job_hunter.py
 ```
 
 ---
 
-## 👤 30-Second Personalization
+## 👤 30-Second Personalization for Any Candidate
 
-Anyone can personalize this repository for their own career in three simple steps:
-
-1. **Drop In Resumes (`documents/cv/`):**
-   - Copy your master resume PDF into `documents/cv/master_resume.pdf`.
-   - Copy any localized CVs (e.g., Polish, German, Spanish) into `documents/cv/localized_cv.docx`.
+1. **Drop Resumes into `documents/cv/`:**
+   - Drop your master PDF/Word resume into `documents/cv/`.
 2. **Configure Candidate Profile (`candidate_profile.json`):**
-   - Update your location, target compensation (PLN, EUR, USD), and legal entity (B2B contractor vs. employment).
-   - Add **blacklisted past employers** (ensuring you never accidentally apply to previous companies).
-3. **Launch & Track:**
-   - The visual dashboard automatically syncs your profile, analyzes target postings, and tracks every application in the local database.
+   - Set your location, legal entity (B2B contractor vs. employment), and target compensation.
+   - Set **blacklisted past employers** (never accidentally apply to previous employers).
+   - Add native language RODO / GDPR clauses.
+3. **Launch the Counter-ATS:**
+   - The system automatically syncs your profile and manages your job hunt autonomously.
 
 ---
 
-## 📊 Architecture Diagram
+## 📊 System Architecture
 
 ```mermaid
 flowchart TB
-    UI["React 19 Frontend<br/>(Kanban, Table Ledger, Inspector)"] <--> IPC["Tauri v2 IPC Bridge<br/>(Rust Shell)"]
-    IPC <--> DB["Local SQLite Database<br/>(~/.emiliano/job_hunter.db)"]
-    IPC <--> Engine["Emiliano Engine (Python)<br/>(PostingGuard, AntiDetection, SLM)"]
-    Engine <--> Ollama["Local Ollama SLM<br/>(qwen2.5-coder:3b)"]
-    Engine <--> Chrome["Chrome Extension Cowork<br/>(DOM Autofill + Human Gate)"]
+    Candidate["👤 Candidate"] --> Desktop["Desktop App (Tauri v2 + React 19)<br/>emiliano-job-hunter.exe"]
+    
+    subgraph CounterATS["Candidate Tracking System (CTS)"]
+        Kanban["Visual Kanban Pipeline Board"]
+        Ledger["Audit Ledger (CV Variant Tracking)"]
+        Guard["posting_guard.py (Canary Stripper)"]
+        Audit["anti_detection_audit.py (Burstiness Enforcer)"]
+        DB["Local SQLite DB (~/.emiliano/job_hunter.db)"]
+    end
+
+    Desktop <--> CounterATS
+    CounterATS <--> SLM["Local Model: Ollama qwen2.5-coder:3b"]
+    CounterATS <--> Chrome["Chrome Extension Cowork (DOM Autofill + Human Gate)"]
+    Chrome --> Portals["Target Portals (Greenhouse, Lever, Workday)"]
 ```
 
 ---
