@@ -52,11 +52,27 @@ AI detectors (GPTZero, CopyLeaks, Turnitin) measure sentence length uniformity (
 - Zero-tolerance ban on 60+ algorithmic LLM clichés (*testament, delve, spearheaded, pivotal, seamlessly, dynamic landscape*).
 - Yields a 100% human score on detector benchmarks.
 
-### 5. 🖥️ Standalone Executable (Tauri v2 in Rust)
-- Packaged as a native, lightweight (< 45 MB RAM) Windows desktop executable.
-- Users double-click `emiliano-job-hunter.exe` to run the interface without needing Node.js or Python installed.
+### 5. 🖥️ Standalone Executable & One-Click Launch (Tauri v2 in Rust)
+- Packaged as a native, lightweight (< 45 MB RAM, 6.1 MB disk) Windows desktop executable.
+- Users simply double-click **`Launch-Job-Hunter.bat`** or run `src-tauri\target\release\emiliano-job-hunter.exe` to run the interface without needing Node.js or Python installed.
+- Embedded WebView2 isolation ensures zero collisions with other browser sessions or background tools.
 
 ---
+
+## 🚀 How to Run
+
+### Method 1: Double-Click Launcher (Zero Commands)
+Double-click `Launch-Job-Hunter.bat` in the repository root. It detects the native release executable and launches the desktop GUI immediately.
+
+### Method 2: Native Executable
+```powershell
+& "src-tauri\target\release\emiliano-job-hunter.exe"
+```
+
+### Method 3: Browser Runner
+```bash
+python run_job_hunter.py
+```
 
 ## 🚀 Quick Start
 
