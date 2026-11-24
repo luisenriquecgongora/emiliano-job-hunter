@@ -4,6 +4,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use tauri::Manager;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApplicationRecord {
@@ -46,11 +47,42 @@ fn save_applications(applications: Vec<ApplicationRecord>) -> Result<bool, Strin
 }
 
 fn main() {
-    tauri::Builder::default()
+    // Isolate WebView2 data directory to prevent HRESULT 0x800700AA collisions
+    let app_data = std::env::var("LOCALAPPDATA").unwrap_or_else(|_| ".".into());
+    let webview_dir = PathBuf::from(app_data).join("EmilianoJobHunter_WebView");
+    let _ = fs::create_dir_all(&webview_dir);
+    std::env::set_var("WEBVIEW2_USER_DATA_FOLDER", &webview_dir);
+
+    println!("[JobHunter] Initializing Tauri Builder with isolated WebView2 dir: {:?}", webview_dir);
+
+    let app = tauri::Builder::default()
+        .setup(|app| {
+            println!("[JobHunter Setup] Hook started.");
+            if let Some(win) = app.get_webview_window("main") {
+                println!("[JobHunter Setup] Found window 'main'. Ensuring visibility and focus...");
+                let _ = win.show();
+                let _ = win.unminimize();
+                let _ = win.set_focus();
+                let hwnd_debug = format!("{:?}", win.hwnd());
+                println!("[JobHunter Setup] Main window HWND = {}", hwnd_debug);
+                let _ = fs::write("C:\\Users\\artlu\\OracliomNew\\Oracliom\\scratch\\hunter_hwnd.txt", &hwnd_debug);
+                println!("[JobHunter Setup] Main window showed successfully!");
+            } else {
+                eprintln!("[JobHunter Setup] Warning: window 'main' not returned by get_webview_window!");
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             get_applications,
             save_applications
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running Emiliano Job Hunter Tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building Emiliano Job Hunter Tauri application");
+
+    app.run(|_app_handle, event| {
+        match &event {
+            tauri::RunEvent::MainEventsCleared => {},
+            _ => println!("[JobHunter Event] {:?}", event),
+        }
+    });
 }

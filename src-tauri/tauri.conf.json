@@ -10,14 +10,16 @@
     "windows": [
       {
         "label": "main",
-        "title": "Emiliano Job Hunter | Application & CV Tracker",
+        "title": "Emiliano Job Hunter | Autonomous Application & CV Tracker CRM",
+        "url": "index.html",
         "width": 1400,
         "height": 920,
         "minWidth": 1024,
         "minHeight": 700,
         "center": true,
         "decorations": true,
-        "transparent": false
+        "transparent": false,
+        "visible": true
       }
     ],
     "security": {
